@@ -1,2 +1,2 @@
-TOKEN = 'OTM0ODE2MTk5OTExNTQ2OTEw.Ye1lbg.TFmMZL6PiwinayoEUIuYy56KZkc'
+TOKEN = 'token here'
 PREFIX = '!'
