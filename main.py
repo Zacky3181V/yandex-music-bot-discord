@@ -6,6 +6,7 @@ from discord.utils import get
 import music
 import os
 
+
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
 
@@ -57,8 +58,20 @@ async def play(ctx):
             voice = await channel.connect()
         source = FFmpegPCMAudio('as')
         player = voice.play(source)
+#накодил zacky
+@bot.command()
+async def pause(ctx):
+    server = ctx.message.guild
+    voice_channel = server.voice_client
+    voice_channel.pause()
+    
+    await ctx.send('Поставили на паузу')
 
-#client = commands.Bot(command_prefix='?', intents = discord.Intents.all())
-
+@bot.command()
+async def resume(ctx):
+    server = ctx.message.guild
+    voice_channel = server.voice_client
+    voice_channel.resume() 
+    await ctx.send('Возобновили')
 
 bot.run(config.TOKEN)
