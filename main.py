@@ -3,7 +3,8 @@ import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
 from discord.utils import get
-
+import music
+import yandex_music
 
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
@@ -26,7 +27,8 @@ async def leave(ctx):
 async def whoa(ctx):
     if ctx.message.content.startswith('!whoa'):
         channel = ctx.message.channel
-        await ctx.channel.send(ctx.message.content[5:].format(ctx.message))
+        music.download(ctx.message.content[5:].format(ctx.message))
+        #await ctx.channel.send(ctx.message.content[5:].format(ctx.message))
 
 @bot.command()
 async def play(ctx):
