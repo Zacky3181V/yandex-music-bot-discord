@@ -30,9 +30,10 @@ async def play(ctx):
         if ctx.message.content.startswith('!play'):
             channel = ctx.message.channel
             music.download(ctx.message.content[5:].format(ctx.message))
+
         channel = ctx.message.author.voice.channel
         if not channel:
-            await ctx.send("You are not connected to a voice channel")
+            await ctx.send("Вы не подключены к голосовому чату :(")
             return
         voice = get(bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
@@ -47,7 +48,7 @@ async def play(ctx):
             music.download(ctx.message.content[5:].format(ctx.message))
         channel = ctx.message.author.voice.channel
         if not channel:
-            await ctx.send("You are not connected to a voice channel")
+            await ctx.send("Вы не подключены к голосовому чату :(")
             return
         voice = get(bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
