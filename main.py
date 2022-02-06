@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
 from discord.utils import get
-import yandex_music
+
 
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
