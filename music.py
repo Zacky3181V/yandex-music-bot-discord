@@ -1,5 +1,5 @@
 from yandex_music import Best, Client, Search
-import authorise as aut
+import config as aut
 import yandex_music
 
 def download(url):
