@@ -51,11 +51,17 @@ async def play(ctx):
         if os.path.exists("as"):
             os.remove("as")
             if ctx.message.content.startswith('!play'):
+                info = music.infoTrack(url)
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
                 music.download(url)
+                await ctx.send("Включаю песню")
                 await playLocalFile(ctx)
         else:
             if ctx.message.content.startswith('!play'):
+                info = music.infoTrack(url)
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
                 music.download(url)
+                await ctx.send("Включаю песню")
                 await playLocalFile(ctx)
     else:
         response = requests.get(url)
@@ -65,7 +71,10 @@ async def play(ctx):
         for title in quotes:
             s = title.text.strip(), title.get('href')   
             url = "https://music.yandex.ru" + s[1]
+            info = music.infoTrack(url)
+            await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
             music.download(url)
+            await ctx.send("Включаю песню")
             await playLocalFile(ctx)
 
 async def playLocalFile(ctx):
