@@ -4,8 +4,10 @@ from discord.ext import commands
 from discord import FFmpegPCMAudio
 from discord.utils import get
 import music
+import re
+from bs4 import BeautifulSoup
+import requests
 import os
-
 
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
@@ -23,41 +25,7 @@ async def join(ctx):
 @bot.command()
 async def leave(ctx):
     await ctx.voice_client.disconnect()
-
-@bot.command()
-async def play(ctx):
-    if os.path.exists("as") == True:
-        os.remove("as")
-        if ctx.message.content.startswith('!play'):
-            channel = ctx.message.channel
-            music.download(ctx.message.content[5:].format(ctx.message))
-
-        channel = ctx.message.author.voice.channel
-        if not channel:
-            await ctx.send("Вы не подключены к голосовому чату :(")
-            return
-        voice = get(bot.voice_clients, guild=ctx.guild)
-        if voice and voice.is_connected():
-            await voice.move_to(channel)
-        else:
-            voice = await channel.connect()
-        source = FFmpegPCMAudio('as')
-        player = voice.play(source)
-    else:
-        if ctx.message.content.startswith('!play'):
-            channel = ctx.message.channel
-            music.download(ctx.message.content[5:].format(ctx.message))
-        channel = ctx.message.author.voice.channel
-        if not channel:
-            await ctx.send("Вы не подключены к голосовому чату :(")
-            return
-        voice = get(bot.voice_clients, guild=ctx.guild)
-        if voice and voice.is_connected():
-            await voice.move_to(channel)
-        else:
-            voice = await channel.connect()
-        source = FFmpegPCMAudio('as')
-        player = voice.play(source)
+        
 #накодил zacky
 @bot.command()
 async def pause(ctx):
@@ -73,5 +41,44 @@ async def resume(ctx):
     voice_channel = server.voice_client
     voice_channel.resume() 
     await ctx.send('Возобновили')
+
+@bot.command()
+async def play(ctx):
+    url = ctx.message.content[6:].format(ctx.message)
+    pattern = re.compile("(track)")
+
+    if pattern.search(url):
+        if os.path.exists("as"):
+            os.remove("as")
+            if ctx.message.content.startswith('!play'):
+                music.download(url)
+                await playLocalFile(ctx)
+        else:
+            if ctx.message.content.startswith('!play'):
+                music.download(url)
+                await playLocalFile(ctx)
+    else:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'lxml')
+
+        quotes = soup.find_all('a', class_='d-track__title deco-link deco-link_stronger')
+        for title in quotes:
+            s = title.text.strip(), title.get('href')   
+            url = "https://music.yandex.ru" + s[1]
+            music.download(url)
+            await playLocalFile(ctx)
+
+async def playLocalFile(ctx):
+    channel = ctx.message.author.voice.channel
+    if not channel:
+        await ctx.send("Вы не подключены к голосовому чату :(")
+        return
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+    source = FFmpegPCMAudio('as')
+    player = voice.play(source)
 
 bot.run(config.TOKEN)
