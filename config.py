@@ -1,3 +1,3 @@
-TOKEN = 'token here'
-OAUTH = 'here is your yandexmusic token'
+TOKEN = "token here"
+OAUTH = "here is your yandexmusic token"
 PREFIX = '!'
