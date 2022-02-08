@@ -8,6 +8,7 @@ import re
 from bs4 import BeautifulSoup
 import requests
 import os
+import time
 
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
@@ -52,14 +53,16 @@ async def play(ctx):
             os.remove("as")
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
-                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
+                durationTrack = info.get('duration')
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
                 music.download(url)
                 await ctx.send("Включаю песню")
                 await playLocalFile(ctx)
         else:
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
-                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
+                durationTrack = info.get('duration')
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
                 music.download(url)
                 await ctx.send("Включаю песню")
                 await playLocalFile(ctx)
@@ -72,10 +75,27 @@ async def play(ctx):
             s = title.text.strip(), title.get('href')   
             url = "https://music.yandex.ru" + s[1]
             info = music.infoTrack(url)
-            await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nНачинаю скачивать...")
+            durationTrack = info.get('duration')
+            await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
             music.download(url)
             await ctx.send("Включаю песню")
             await playLocalFile(ctx)
+            time.sleep(int(float(durationTrack)))
+
+async def secondToMinutes(second):
+    second = int(float(second))
+    h = str(second // 3600)
+    m = (second // 60) % 60
+    s = second % 60
+    if m < 10:
+        m = '0' + str(m)
+    else:
+        m = str(m)
+    if s < 10:
+        s = '0' +str(s)
+    else:
+        s = str(s)
+    return h + ':' + m + ':' + s
 
 async def playLocalFile(ctx):
     channel = ctx.message.author.voice.channel

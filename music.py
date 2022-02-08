@@ -23,5 +23,5 @@ def infoTrack(url):
     artists = ""
     for i in track.artists_name():
         artists = artists + f" {i}"
-    s = {'name' : f'{track.title}', 'artists' : f'{artists}', 'album' : f'{album.title}', 'genre' : f'{album.genre}'}
+    s = {'name' : f'{track.title}', 'artists' : f'{artists}', 'album' : f'{album.title}', 'genre' : f'{album.genre}', 'duration' : f'{track.duration_ms / 1000}'}
     return s
