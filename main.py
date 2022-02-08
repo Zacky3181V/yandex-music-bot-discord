@@ -20,8 +20,8 @@ async def hi(ctx):
     await ctx.send(f'sup, {author.mention}')
 
 @bot.command()
-async def help(ctx):
-    await ctx.send(f'!play ссылкаНаТрекИлиАльбом - воспроизведение песни или альбома **ВНИМАНИЕ**: Исполнитель команды должен находится в VoiceChannel\n!join - Бот зайдёт в VoiceChannel\n!stop - Бот выйдет из VoiceChanell, музыка прервётся\n!pause - Можно не объяснять :)\n!resume - Тоже можно не объеснять :)')
+async def helpBot(ctx):
+    await ctx.send(f'[--------------------------------Команды---------------------------------]\n*!play* <ссылкаНаТрекИлиАльбом> - воспроизведение песни или альбома **ВНИМАНИЕ:** Исполнитель команды должен находится в VoiceChannel\n*!stop* - Бот выйдет из VoiceChanell, музыка прервётся\n*!pause* - Можно не объяснять :)\n*!resume* - Тоже можно не объяснять :)\n[-------------------------Информация о боте---------------------------]\nРазработчики: KirMozor#6756 и delay120#2363\nGitHub: https://github.com/Zacky3181V/yandex-music-bot-discord\nПожелания и отчёты о багах писать в GitHub\n**Псс...** донатики тоже на странице GitHub скидывайте')
     
 #удалено join
 
