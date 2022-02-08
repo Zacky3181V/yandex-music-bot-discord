@@ -32,17 +32,26 @@ async def leave(ctx):
 @bot.command()
 async def pause(ctx):
     server = ctx.message.guild
-    voice_channel = server.voice_client
-    voice_channel.pause()
-    
-    await ctx.send('Поставили на паузу')
+    voice_channel = ctx.voice_client #изменил, если обратно вернуть то вместо ctx поставить server
+    if voice_channel.is_playing():
+        voice_channel.pause()
+        await ctx.send('**Поставили на паузу**')
+    else:
+        if voice_channel.is_paused() == True:
+            await ctx.send('**Уже поставлено на паузу**')
+        else: 
+            await ctx.send('**Упс...похоже, нет проигрываемой музыки**')
+
 
 @bot.command()
 async def resume(ctx):
     server = ctx.message.guild
-    voice_channel = server.voice_client
-    voice_channel.resume() 
-    await ctx.send('Возобновили')
+    voice_channel = ctx.voice_client #изменил, если обратно вернуть то вместо ctx поставить server
+    if ctx.voice_client.is_paused() == True:
+        voice_channel.resume() 
+        await ctx.send('**Возобновили**')
+    else:
+        await ctx.send('**Вы и не ставили на паузу**')
 
 @bot.command()
 async def play(ctx):
