@@ -19,13 +19,10 @@ async def hi(ctx):
     author = ctx.message.author
     await ctx.send(f'sup, {author.mention}')
     
-@bot.command()
-async def join(ctx):
-    channel = ctx.author.voice.channel
-    await channel.connect()
+#удалено join
 
 @bot.command()
-async def leave(ctx):
+async def stop(ctx):
     await ctx.voice_client.disconnect()
         
 #накодил zacky
