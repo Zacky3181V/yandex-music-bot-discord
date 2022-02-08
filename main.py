@@ -1,4 +1,5 @@
 import config
+import asyncio
 import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
@@ -57,7 +58,7 @@ async def play(ctx):
                 await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
                 music.download(url)
                 await ctx.send("Включаю песню")
-                await playLocalFile(ctx)
+                await playLocalFile(ctx, int(float(durationTrack)))
         else:
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
@@ -65,7 +66,7 @@ async def play(ctx):
                 await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
                 music.download(url)
                 await ctx.send("Включаю песню")
-                await playLocalFile(ctx)
+                await playLocalFile(ctx, int(float(durationTrack)))
     else:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'lxml')
@@ -79,8 +80,7 @@ async def play(ctx):
             await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
             music.download(url)
             await ctx.send("Включаю песню")
-            await playLocalFile(ctx)
-            time.sleep(int(float(durationTrack)))
+            await playLocalFile(ctx, int(float(durationTrack)))
 
 async def secondToMinutes(second):
     second = int(float(second))
@@ -97,7 +97,8 @@ async def secondToMinutes(second):
         s = str(s)
     return h + ':' + m + ':' + s
 
-async def playLocalFile(ctx):
+@bot.command()
+async def playLocalFile(ctx, second):
     channel = ctx.message.author.voice.channel
     if not channel:
         await ctx.send("Вы не подключены к голосовому чату :(")
@@ -109,5 +110,6 @@ async def playLocalFile(ctx):
         voice = await channel.connect()
     source = FFmpegPCMAudio('as')
     player = voice.play(source)
+    await asyncio.sleep(second)
 
 bot.run(config.TOKEN)
