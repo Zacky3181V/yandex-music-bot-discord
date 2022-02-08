@@ -14,6 +14,11 @@ import time
 #client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX)
 
+
+@bot.event
+async def on_ready():
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="!helpBot"))
+
 @bot.command()
 async def hi(ctx):
     author = ctx.message.author
