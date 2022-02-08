@@ -18,6 +18,10 @@ bot = commands.Bot(command_prefix=config.PREFIX)
 async def hi(ctx):
     author = ctx.message.author
     await ctx.send(f'sup, {author.mention}')
+
+@bot.command()
+async def help(ctx):
+    await ctx.send(f'!play ссылкаНаТрекИлиАльбом - воспроизведение песни или альбома **ВНИМАНИЕ**: Исполнитель команды должен находится в VoiceChannel\n!join - Бот зайдёт в VoiceChannel\n!stop - Бот выйдет из VoiceChanell, музыка прервётся\n!pause - Можно не объяснять :)\n!resume - Тоже можно не объеснять :)')
     
 #удалено join
 
