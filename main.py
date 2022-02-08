@@ -11,13 +11,11 @@ import requests
 import os
 import time
 
+
+activity = discord.Activity(type=discord.ActivityType.watching, name="!helpBot")
 #client = discord.Client(command_prefix = '!')
-bot = commands.Bot(command_prefix=config.PREFIX)
+bot = commands.Bot(command_prefix=config.PREFIX, activity=activity, status=discord.Status.idle)
 
-
-@bot.event
-async def on_ready():
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="!helpBot"))
 
 @bot.command()
 async def hi(ctx):
