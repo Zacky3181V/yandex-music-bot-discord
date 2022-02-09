@@ -85,15 +85,21 @@ async def play(ctx):
         soup = BeautifulSoup(response.text, 'lxml')
 
         quotes = soup.find_all('a', class_='d-track__title deco-link deco-link_stronger')
+        global queue
+        queue = []
         for title in quotes:
             s = title.text.strip(), title.get('href')   
             url = "https://music.yandex.ru" + s[1]
             info = music.infoTrack(url)
+            queue.append(url)
+            print(queue)
             durationTrack = info.get('duration')
             await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
             music.download(url)
             await ctx.send("Включаю песню")
             await playLocalFile(ctx, int(float(durationTrack)))
+
+
 
 async def secondToMinutes(second):
     second = int(float(second))
@@ -124,5 +130,35 @@ async def playLocalFile(ctx, second):
     source = FFmpegPCMAudio('as')
     player = voice.play(source)
     await asyncio.sleep(second)
+
+@bot.command()
+async def next(ctx):
+    if len(queue)>1:
+        voice_channel = ctx.voice_client
+        voice_channel.stop()
+        queue.pop(0)
+        info = music.infoTrack(queue[0])
+        await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(info.get('duration'))}\nНачинаю скачивать...")
+        music.download(queue[0])
+        await playLocalFile(ctx, int(float(info.get('duration'))))
+    else:
+        #ctx.send('**Нет треков в очереди**')
+        pass
+
+@bot.command()
+async def clean(ctx):
+    if len(queue)==1:
+        await ctx.send('**Нет треков в очереди, очищать нечего**')
+    else:
+        for tracks in reversed(range(1,len(queue))):
+            queue.pop(tracks)
+        await ctx.send('**Очередь очищена, добавляй следующие треки**')
+
+@bot.command()
+async def add(ctx):
+    added_track_url = ctx.message.content[4:].format(ctx.message)
+    queue.append(added_track_url)
+    await ctx.send('**Добавлен новый трек в очередь**')
+
 
 bot.run(config.TOKEN)
