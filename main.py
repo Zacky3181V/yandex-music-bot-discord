@@ -54,6 +54,50 @@ async def resume(ctx):
         await ctx.send('**Вы и не ставили на паузу**')
 
 @bot.command()
+async def next(ctx):
+    if len(queue)>1:
+        voice_channel = ctx.voice_client
+        voice_channel.stop()
+        queue.pop(0)
+        info = music.infoTrack(queue[0])
+        await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(info.get('duration'))}\nНачинаю скачивать...")
+        music.download(queue[0])
+        await playLocalFile(ctx, int(float(info.get('duration'))))
+    else:
+        #ctx.send('**Нет треков в очереди**')
+        pass
+
+@bot.command()
+async def clean(ctx):
+    if len(queue)==1:
+        await ctx.send('**Нет треков в очереди, очищать нечего**')
+    else:
+        for tracks in reversed(range(1,len(queue))):
+            queue.pop(tracks)
+        await ctx.send('**Очередь очищена, добавляй следующие треки**')
+
+@bot.command()
+async def add(ctx):
+    added_track_url = ctx.message.content[4:].format(ctx.message)
+    queue.append(added_track_url)
+    await ctx.send('**Добавлен новый трек в очередь**')
+
+async def secondToMinutes(second):
+    second = int(float(second))
+    h = str(second // 3600)
+    m = (second // 60) % 60
+    s = second % 60
+    if m < 10:
+        m = '0' + str(m)
+    else:
+        m = str(m)
+    if s < 10:
+        s = '0' +str(s)
+    else:
+        s = str(s)
+    return h + ':' + m + ':' + s
+
+@bot.command()
 async def play(ctx):
     url = ctx.message.content[6:].format(ctx.message)
     pattern = re.compile("(track)")
@@ -91,21 +135,6 @@ async def play(ctx):
             await ctx.send("Включаю песню")
             await playLocalFile(ctx, int(float(durationTrack)), url)
 
-async def secondToMinutes(second):
-    second = int(float(second))
-    h = str(second // 3600)
-    m = (second // 60) % 60
-    s = second % 60
-    if m < 10:
-        m = '0' + str(m)
-    else:
-        m = str(m)
-    if s < 10:
-        s = '0' +str(s)
-    else:
-        s = str(s)
-    return h + ':' + m + ':' + s
-
 @bot.command()
 async def playLocalFile(ctx, second, url):
     channel = ctx.message.author.voice.channel
@@ -125,35 +154,5 @@ async def playLocalFile(ctx, second, url):
     source = FFmpegPCMAudio(url)
     player = voice.play(source)
     await asyncio.sleep(second)
-
-@bot.command()
-async def next(ctx):
-    if len(queue)>1:
-        voice_channel = ctx.voice_client
-        voice_channel.stop()
-        queue.pop(0)
-        info = music.infoTrack(queue[0])
-        await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(info.get('duration'))}\nНачинаю скачивать...")
-        music.download(queue[0])
-        await playLocalFile(ctx, int(float(info.get('duration'))))
-    else:
-        #ctx.send('**Нет треков в очереди**')
-        pass
-
-@bot.command()
-async def clean(ctx):
-    if len(queue)==1:
-        await ctx.send('**Нет треков в очереди, очищать нечего**')
-    else:
-        for tracks in reversed(range(1,len(queue))):
-            queue.pop(tracks)
-        await ctx.send('**Очередь очищена, добавляй следующие треки**')
-
-@bot.command()
-async def add(ctx):
-    added_track_url = ctx.message.content[4:].format(ctx.message)
-    queue.append(added_track_url)
-    await ctx.send('**Добавлен новый трек в очередь**')
-
 
 bot.run(config.TOKEN)
