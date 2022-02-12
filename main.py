@@ -11,11 +11,8 @@ import requests
 import os
 import time
 
-
 activity = discord.Activity(type=discord.ActivityType.watching, name="!helpBot")
-#client = discord.Client(command_prefix = '!')
 bot = commands.Bot(command_prefix=config.PREFIX, activity=activity, status=discord.Status.idle)
-
 
 @bot.command()
 async def hi(ctx):
@@ -46,7 +43,6 @@ async def pause(ctx):
         else: 
             await ctx.send('**Упс...похоже, нет проигрываемой музыки**')
 
-
 @bot.command()
 async def resume(ctx):
     server = ctx.message.guild
@@ -68,18 +64,14 @@ async def play(ctx):
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
                 durationTrack = info.get('duration')
-                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
-                music.download(url)
-                await ctx.send("Включаю песню")
-                await playLocalFile(ctx, int(float(durationTrack)))
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}")
+                await playLocalFile(ctx, int(float(durationTrack)), url)
         else:
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
                 durationTrack = info.get('duration')
-                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
-                music.download(url)
-                await ctx.send("Включаю песню")
-                await playLocalFile(ctx, int(float(durationTrack)))
+                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}")
+                await playLocalFile(ctx, int(float(durationTrack)), url)
     else:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'lxml')
@@ -97,9 +89,7 @@ async def play(ctx):
             await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
             music.download(url)
             await ctx.send("Включаю песню")
-            await playLocalFile(ctx, int(float(durationTrack)))
-
-
+            await playLocalFile(ctx, int(float(durationTrack)), url)
 
 async def secondToMinutes(second):
     second = int(float(second))
@@ -117,7 +107,7 @@ async def secondToMinutes(second):
     return h + ':' + m + ':' + s
 
 @bot.command()
-async def playLocalFile(ctx, second):
+async def playLocalFile(ctx, second, url):
     channel = ctx.message.author.voice.channel
     if not channel:
         await ctx.send("Вы не подключены к голосовому чату :(")
@@ -127,7 +117,12 @@ async def playLocalFile(ctx, second):
         await voice.move_to(channel)
     else:
         voice = await channel.connect()
-    source = FFmpegPCMAudio('as')
+
+    url_parts=url.split('/')
+    trackID = url_parts[-1]
+
+    url = music.extractDirectLinkToTrack(trackID)
+    source = FFmpegPCMAudio(url)
     player = voice.play(source)
     await asyncio.sleep(second)
 

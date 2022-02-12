@@ -3,16 +3,20 @@ import config as aut
 import yandex_music
 
 client = Client.from_token(aut.OAUTH)
-def download(url):
 
-    url_parts=url.split('/')
+def extractDirectLinkToTrack(track_id):
+    track = client.tracks(track_id)[0]
+    track_download_info = track.get_download_info()
 
+    is_track_suitable = lambda info: all([
+        info.codec == "mp3",
+        info.bitrate_in_kbps == 192
+    ])
 
-    trackID = url_parts[-1]
-    track = client.tracks([trackID])[0]
-    trackDownloadInfo = track.get_download_info()[0]
-
-    track.download('as', 'mp3', 192)
+    for info in track_download_info:
+        if is_track_suitable(info):
+            return info.get_direct_link()
+            
 def infoTrack(url):
     url_parts=url.split('/')
     trackID = url_parts[-1]
