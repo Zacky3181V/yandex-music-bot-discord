@@ -5,7 +5,6 @@ from discord.ext import commands
 from discord import FFmpegPCMAudio
 from discord.utils import get
 import music
-import re
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -100,9 +99,8 @@ async def secondToMinutes(second):
 @bot.command()
 async def play(ctx):
     url = ctx.message.content[6:].format(ctx.message)
-    pattern = re.compile("(track)")
-
-    if pattern.search(url):
+    checkInTrack = url.split("/")
+    if checkInTrack[-2] == "track":
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
                 durationTrack = info.get('duration')
