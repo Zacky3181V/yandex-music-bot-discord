@@ -103,14 +103,6 @@ async def play(ctx):
     pattern = re.compile("(track)")
 
     if pattern.search(url):
-        if os.path.exists("as"):
-            os.remove("as")
-            if ctx.message.content.startswith('!play'):
-                info = music.infoTrack(url)
-                durationTrack = info.get('duration')
-                await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}")
-                await playLocalFile(ctx, int(float(durationTrack)), url)
-        else:
             if ctx.message.content.startswith('!play'):
                 info = music.infoTrack(url)
                 durationTrack = info.get('duration')
@@ -128,11 +120,9 @@ async def play(ctx):
             url = "https://music.yandex.ru" + s[1]
             info = music.infoTrack(url)
             queue.append(url)
-            print(queue)
+
             durationTrack = info.get('duration')
-            await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}\nНачинаю скачивать...")
-            music.download(url)
-            await ctx.send("Включаю песню")
+            await ctx.send(f"Название трека: {info.get('name')}\nАльбом: {info.get('album')}\nИсполнитель(-ли): {info.get('artists')}\nЖанр: {info.get('genre')}\nДлина трека: {await secondToMinutes(durationTrack)}")
             await playLocalFile(ctx, int(float(durationTrack)), url)
 
 @bot.command()
