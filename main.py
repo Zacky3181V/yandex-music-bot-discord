@@ -7,7 +7,6 @@ from discord.utils import get
 import music
 from bs4 import BeautifulSoup
 import requests
-import os
 import time
 
 activity = discord.Activity(type=discord.ActivityType.watching, name="!helpBot")
